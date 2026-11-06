@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>מסע מילים ליפן | יחידה 1</title>
+  <style>
+    :root {
+      --ink: #2b3350;
+      --muted: #5c6585;
+      --paper: #fffaf3;
+      --card: #ffffff;
+      --coral: #ff6b6b;
+      --gold: #f4a261;
+      --teal: #2a9d8f;
+      --indigo: #3d4e8a;
+      --sky: #7eb8da;
+      --ok: #2a9d8f;
+      --bad: #e76f51;
+      --shadow: 0 12px 30px rgba(43, 51, 80, 0.12);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Arial Hebrew", "David", "Tahoma", "Helvetica Neue", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #ffe3d3 0%, transparent 55%),
+        radial-gradient(900px 500px at 110% 0%, #d7f3ee 0%, transparent 50%),
+        linear-gradient(180deg, #fff6eb 0%, #f3f0ff 100%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 18px 16px 48px; }
+    .note {
+      background: #fff3cd;
+      border: 2px solid #f4c56d;
+      color: #5a430e;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+    header {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 20px 16px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    header:before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 10px;
+      background: linear-gradient(180deg, var(--coral), var(--gold), var(--teal));
+    }
+    h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.02em; }
+    .sub { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill, button, .mode {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+    .pill {
+      background: #eef1f8;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 700;
+    }
+    .pill.active { color: #fff; background: var(--indigo); }
+    body[data-player="mika"] .pill.active { background: #e35d6a; }
+    body[data-player="romi"] .pill.active { background: var(--teal); }
+    .scores {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .stat {
+      background: #f6f3ff;
+      border-radius: 14px;
+      padding: 8px 12px;
+      min-width: 88px;
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 20px; color: var(--indigo); }
+    .stat span { font-size: 12px; color: var(--muted); }
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .mode {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      padding: 16px 12px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--indigo);
+      border: 3px solid transparent;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .mode:hover { transform: translateY(-2px); }
+    .mode.active { border-color: var(--gold); background: #fff8ee; }
+    .mode small { display: block; font-weight: 500; color: var(--muted); margin-top: 4px; }
+    #stage {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-height: 340px;
+      padding: 22px 18px 24px;
+    }
+    .welcome { text-align: center; padding: 18px 8px 8px; }
+    .welcome p { color: var(--muted); line-height: 1.6; }
+    .big { font-size: 42px; margin: 0; }
+    .card {
+      max-width: 430px;
+      margin: 10px auto;
+      perspective: 1000px;
+    }
+    .card-inner {
+      position: relative;
+      min-height: 230px;
+      transform-style: preserve-3d;
+      transition: transform .45s ease;
+    }
+    .card.flipped .card-inner { transform: rotateY(180deg); }
+    .face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    .front { background: linear-gradient(160deg, #3d4e8a, #6a7cc9); color: #fff; }
+    .back { background: linear-gradient(160deg, #2a9d8f, #57c2b4); color: #fff; transform: rotateY(180deg); }
+    .face .word { font-size: 40px; font-weight: 800; line-height: 1.25; }
+    .face .hint { margin-top: 12px; opacity: .9; font-size: 16px; }
+    .en { direction: ltr; unicode-bidi: isolate; }
+    .actions, .bar { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+    .btn {
+      background: var(--indigo);
+      color: #fff;
+      border-radius: 14px;
+      padding: 11px 18px;
+      font-weight: 800;
+    }
+    .btn.ok { background: var(--ok); }
+    .btn.bad { background: var(--bad); }
+    .btn.ghost { background: #eceff7; color: var(--ink); }
+    .btn.gold { background: var(--gold); color: #4a2c0a; }
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 560px; margin: 18px auto 0; }
+    .choice {
+      background: #f4f6fb;
+      border-radius: 16px;
+      padding: 16px 12px;
+      font-weight: 800;
+      font-size: 18px;
+      border: 3px solid transparent;
+    }
+    .choice.right { background: #d8f3ee; border-color: var(--ok); }
+    .choice.wrong { background: #ffe1d8; border-color: var(--bad); }
+    .prompt { text-align: center; margin: 8px 0 0; font-size: 18px; }
+    .prompt .q { font-size: 34px; font-weight: 800; margin: 10px 0; }
+    .blank-line { text-align: center; font-size: 22px; line-height: 1.7; margin: 20px 0; }
+    .blank-line input {
+      font: inherit;
+      font-weight: 800;
+      width: min(260px, 70vw);
+      padding: 8px 10px;
+      border: 3px solid #d9deee;
+      border-radius: 12px;
+      text-align: center;
+      direction: ltr;
+    }
+    .he-gloss { text-align: center; color: var(--muted); margin-top: 6px; }
+    .match {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 18px;
+      max-width: 640px;
+      margin: 12px auto 0;
+    }
+    .match button {
+      width: 100%;
+      background: #f4f6fb;
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-weight: 800;
+      border: 3px solid transparent;
+    }
+    .match button.selected { border-color: var(--gold); background: #fff6e8; }
+    .match button.done { background: #d8f3ee; border-color: var(--ok); color: #14685e; }
+    .msg {
+      text-align: center;
+      min-height: 28px;
+      margin-top: 10px;
+      font-weight: 800;
+    }
+    .msg.good { color: var(--ok); }
+    .msg.oops { color: var(--bad); }
+    .progress {
+      height: 10px;
+      background: #eceff7;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px auto 0;
+      max-width: 420px;
+    }
+    .progress > i {
+      display: block; height: 100%; width: 0;
+      background: linear-gradient(90deg, var(--coral), var(--gold));
+      transition: width .25s ease;
+    }
+    .wordlist { margin-top: 16px; background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 14px 16px; }
+    .wordlist summary { cursor: pointer; font-weight: 800; color: var(--indigo); }
+    .wordlist ol { margin: 12px 0 0; padding: 0 20px 0 0; columns: 2; }
+    .wordlist li { margin: 0 0 6px; break-inside: avoid; }
+    .end { text-align: center; padding: 20px 8px; }
+    .end h2 { margin: 8px 0; font-size: 30px; }
+    .toast {
+      position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+      background: #2b3350; color: #fff; padding: 10px 16px; border-radius: 999px;
+      font-weight: 800; display: none; z-index: 5;
+    }
+    .sound {
+      margin-inline-start: auto;
+      background: #eceff7;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+    .reset-btn {
+      background: #fde8e8;
+      color: #8a2f2f;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .stat.mastered b { color: var(--teal); }
+    .device-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    @media (max-width: 640px) {
+      h1 { font-size: 24px; }
+      .choices, .match, .wordlist ol { grid-template-columns: 1fr; columns: 1; }
+      .face .word { font-size: 32px; }
+    }
+  </style>
+</head>
+<body data-player="both">
+  <div class="wrap">
+    <div class="note">
+      רשימת המילים מעמוד 51 בספר (78 מילים וביטויים מיחידה 1 — All About Japan). אפשר ללמוד לפי ימים: בערך 10 ביום, וביום 7 את השאר.
+      <div class="device-note">📱 ההתקדמות נשמרת בטלפון/בדפדפן הזה בלבד. כל אחת בוחרת את השם שלה (מיקה / רומי) בטלפון שלה — כך כל אחת רואה את ההתקדמות שלה.</div>
+    </div>
+    <header>
+      <h1>🎌 מסע מילים ליפן</h1>
+      <p class="sub">אוצר מילים ליחידה 1 · Think About It! · למיקה ולרומי</p>
+      <div class="row">
+        <div class="pills" id="players">
+          <button class="pill" data-player="mika">מיקה</button>
+          <button class="pill" data-player="romi">רומי</button>
+          <button class="pill active" data-player="both">שתיהן</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="reset-btn" id="resetBtn" type="button">איפוס התקדמות</button>
+          <button class="sound" id="soundBtn" type="button">🔊 צליל פועל</button>
+        </div>
+      </div>
+      <div class="scores" style="margin-top:12px">
+        <div class="stat"><b id="score">0</b><span>נקודות</span></div>
+        <div class="stat"><b id="streak">0</b><span>רצף</span></div>
+        <div class="stat"><b id="high">0</b><span>שיא</span></div>
+        <div class="stat mastered"><b id="masteredLabel">0/78</b><span>יודעת</span></div>
+        <div class="stat"><b id="progressLabel">0/0</b><span>בסיבוב</span></div>
+      </div>
+    </header>
+
+    <nav class="modes" id="modes">
+      <button class="mode" data-mode="flash"><span>🃏 כרטיסיות</span><small>EN ↔ HE</small></button>
+      <button class="mode" data-mode="choice"><span>🎯 רב־ברירה</span><small>בחרו את הפירוש</small></button>
+      <button class="mode" data-mode="blank"><span>✏️ השלמת משפט</span><small>מילה חסרה</small></button>
+      <button class="mode" data-mode="match"><span>🔗 התאמה</span><small>אנגלית ↔ עברית</small></button>
+      <button class="mode" data-mode="mix"><span>🌟 אתגר מעורב</span><small>12 שאלות</small></button>
+    </nav>
+
+    <main id="stage"></main>
+
+    <details class="wordlist">
+      <summary>רשימת המילים מעמוד 51 (78)</summary>
+      <ol id="wordList"></ol>
+    </details>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const WORDS = [
+      { en: "about", he: "על / אודות", sentence: "This book is about Japan.", blank: "This book is ______ Japan.", answers: ["about"] },
+      { en: "afraid", he: "מפחד", sentence: "I am afraid of spiders.", blank: "I am ______ of spiders.", answers: ["afraid"] },
+      { en: "anything", he: "כל דבר / משהו", sentence: "You can ask me anything.", blank: "You can ask me ______.", answers: ["anything"] },
+      { en: "arrive", he: "להגיע", sentence: "They arrive at the station.", blank: "They ______ at the station.", answers: ["arrive"] },
+      { en: "catch (a train)", he: "להספיק / לתפוס רכבת", sentence: "We catch a train to Tokyo.", blank: "We ______ to Tokyo.", answers: ["catch (a train)", "catch"] },
+      { en: "clever", he: "חכם", sentence: "The snow monkey is clever.", blank: "The snow monkey is ______.", answers: ["clever"] },
+      { en: "comfortable", he: "נוח", sentence: "The train is comfortable.", blank: "The train is ______.", answers: ["comfortable"] },
+      { en: "cost", he: "לעלות (במחיר)", sentence: "The tickets cost a lot.", blank: "The tickets ______ a lot.", answers: ["cost"] },
+      { en: "Dear ...", he: "יקר/ה (בפתיחת מכתב)", sentence: "Dear Maya,", blank: "______ Maya,", answers: ["Dear ..."] },
+      { en: "decide", he: "להחליט", sentence: "They decide to take a trip.", blank: "They ______ to take a trip.", answers: ["decide"] },
+      { en: "directly", he: "ישירות", sentence: "Please come directly home.", blank: "Please come ______ home.", answers: ["directly"] },
+      { en: "famous", he: "מפורסם", sentence: "Mount Fuji is famous.", blank: "Mount Fuji is ______.", answers: ["famous"] },
+      { en: "get off", he: "לרדת (מכלי תחבורה)", sentence: "We get off the train.", blank: "We ______ the train.", answers: ["get off"] },
+      { en: "get on", he: "לעלות (לכלי תחבורה)", sentence: "We get on the bus.", blank: "We ______ the bus.", answers: ["get on"] },
+      { en: "glad", he: "שמח", sentence: "I am glad you are here.", blank: "I am ______ you are here.", answers: ["glad"] },
+      { en: "hit", he: "להכות / לפגוע", sentence: "Do not hit the ball too hard.", blank: "Do not ______ the ball too hard.", answers: ["hit"] },
+      { en: "island", he: "אי", sentence: "Japan is an island.", blank: "Japan is an ______.", answers: ["island"] },
+      { en: "leave", he: "לעזוב / לצאת", sentence: "We leave the hotel at eight.", blank: "We ______ the hotel at eight.", answers: ["leave"] },
+      { en: "love", he: "לאהוב / אהבה", sentence: "I love sushi.", blank: "I ______ sushi.", answers: ["love"] },
+      { en: "million", he: "מיליון", sentence: "Tokyo has ten million people.", blank: "Tokyo has ten ______ people.", answers: ["million"] },
+      { en: "mountain", he: "הר", sentence: "Fuji is a high mountain.", blank: "Fuji is a high ______.", answers: ["mountain"] },
+      { en: "nature", he: "טבע", sentence: "She loves nature.", blank: "She loves ______.", answers: ["nature"] },
+      { en: "order", he: "להזמין / סדר", sentence: "They order sushi.", blank: "They ______ sushi.", answers: ["order"] },
+      { en: "pick", he: "לבחור / לקטוף", sentence: "I pick a red paper.", blank: "I ______ a red paper.", answers: ["pick"] },
+      { en: "popular", he: "פופולרי / אהוד", sentence: "Tokyo is a popular city.", blank: "Tokyo is a ______ city.", answers: ["popular"] },
+      { en: "reason", he: "סיבה", sentence: "This is the reason I smile.", blank: "This is the ______ I smile.", answers: ["reason"] },
+      { en: "return", he: "לחזור / להחזיר", sentence: "They return home.", blank: "They ______ home.", answers: ["return"] },
+      { en: "saw", he: "ראה (בעבר)", sentence: "I saw a snow monkey.", blank: "I ______ a snow monkey.", answers: ["saw"] },
+      { en: "several", he: "כמה / מספר", sentence: "He has several photos.", blank: "He has ______ photos.", answers: ["several"] },
+      { en: "still", he: "עדיין", sentence: "The water is still hot.", blank: "The water is ______ hot.", answers: ["still"] },
+      { en: "take (something) away", he: "לקחת / להרחיק משהו", sentence: "Please take the bag away.", blank: "Please ______ the bag ______.", answers: ["take (something) away", "take away"] },
+      { en: "take (something) off", he: "להסיר משהו", sentence: "I take my coat off.", blank: "I ______ my coat ______.", answers: ["take (something) off", "take off"] },
+      { en: "take a picture", he: "לצלם תמונה", sentence: "I take a picture of the crane.", blank: "I ______ of the crane.", answers: ["take a picture"] },
+      { en: "take a train", he: "לנסוע ברכבת", sentence: "They take a train to Osaka.", blank: "They ______ to Osaka.", answers: ["take a train"] },
+      { en: "Take care!", he: "שמור/י על עצמך!", sentence: "Take care!", blank: "______!", answers: ["Take care!", "Take care"] },
+      { en: "team", he: "קבוצה / צוות", sentence: "Our team is excellent.", blank: "Our ______ is excellent.", answers: ["team"] },
+      { en: "the cold", he: "הקור", sentence: "They sit in hot water because of the cold.", blank: "They sit in hot water because of ______.", answers: ["the cold"] },
+      { en: "thousand", he: "אלף", sentence: "There are a thousand stars.", blank: "There are a ______ stars.", answers: ["thousand"] },
+      { en: "visitor", he: "מבקר", sentence: "The visitor has a camera.", blank: "The ______ has a camera.", answers: ["visitor"] },
+      { en: "welcome", he: "ברוך הבא / ברוכה הבאה", sentence: "Welcome to Japan!", blank: "______ to Japan!", answers: ["welcome"] },
+      { en: "a while", he: "זמן מה", sentence: "Wait a while, please.", blank: "Wait ______, please.", answers: ["a while"] },
+      { en: "against", he: "נגד", sentence: "The team plays against us.", blank: "The team plays ______ us.", answers: ["against"] },
+      { en: "all the time", he: "כל הזמן", sentence: "She smiles all the time.", blank: "She smiles ______.", answers: ["all the time"] },
+      { en: "almost", he: "כמעט", sentence: "We are almost there.", blank: "We are ______ there.", answers: ["almost"] },
+      { en: "believe", he: "להאמין", sentence: "I believe you.", blank: "I ______ you.", answers: ["believe"] },
+      { en: "both", he: "שניהם / שתיהן", sentence: "Both girls like English.", blank: "______ girls like English.", answers: ["both"] },
+      { en: "collect", he: "לאסוף", sentence: "They collect paper cranes.", blank: "They ______ paper cranes.", answers: ["collect"] },
+      { en: "come home", he: "לחזור הביתה", sentence: "Please come home early.", blank: "Please ______ early.", answers: ["come home"] },
+      { en: "competition", he: "תחרות", sentence: "There is a competition today.", blank: "There is a ______ today.", answers: ["competition"] },
+      { en: "could", he: "יכול היה / יכולתי", sentence: "I could see Mount Fuji.", blank: "I ______ see Mount Fuji.", answers: ["could"] },
+      { en: "date", he: "תאריך / פגישה", sentence: "Write the date at the top.", blank: "Write the ______ at the top.", answers: ["date"] },
+      { en: "excellent", he: "מצוין", sentence: "Your work is excellent.", blank: "Your work is ______.", answers: ["excellent"] },
+      { en: "feel well", he: "להרגיש טוב", sentence: "I feel well today.", blank: "I ______ today.", answers: ["feel well"] },
+      { en: "full", he: "מלא", sentence: "The bus is full.", blank: "The bus is ______.", answers: ["full"] },
+      { en: "get better", he: "להשתפר / להחלים", sentence: "You will get better soon.", blank: "You will ______ soon.", answers: ["get better"] },
+      { en: "get the flu", he: "לחלות בשפעת", sentence: "Do not get the flu.", blank: "Do not ______.", answers: ["get the flu"] },
+      { en: "if", he: "אם", sentence: "Call me if you need help.", blank: "Call me ______ you need help.", answers: ["if"] },
+      { en: "instead", he: "במקום", sentence: "Take a train instead.", blank: "Take a train ______.", answers: ["instead"] },
+      { en: "invite", he: "להזמין (אדם)", sentence: "We invite our friends.", blank: "We ______ our friends.", answers: ["invite"] },
+      { en: "keep", he: "לשמור / להמשיך", sentence: "Keep the ticket in your pocket.", blank: "______ the ticket in your pocket.", answers: ["keep"] },
+      { en: "kiss", he: "נשיקה / לנשק", sentence: "Give Grandma a kiss.", blank: "Give Grandma a ______.", answers: ["kiss"] },
+      { en: "make a mistake", he: "לטעות", sentence: "Do not make a mistake.", blank: "Do not ______.", answers: ["make a mistake"] },
+      { en: "mean", he: "להתכוון / להיות בעל משמעות", sentence: "What does this word mean?", blank: "What does this word ______?", answers: ["mean"] },
+      { en: "medical", he: "רפואי", sentence: "She needs medical help.", blank: "She needs ______ help.", answers: ["medical"] },
+      { en: "message", he: "הודעה", sentence: "I got a message from Mom.", blank: "I got a ______ from Mom.", answers: ["message"] },
+      { en: "miss", he: "להתגעגע / להחמיץ", sentence: "I miss my friends.", blank: "I ______ my friends.", answers: ["miss"] },
+      { en: "much", he: "הרבה", sentence: "Thank you very much.", blank: "Thank you very ______.", answers: ["much"] },
+      { en: "nurse", he: "אח/ות", sentence: "My mother is a nurse.", blank: "My mother is a ______.", answers: ["nurse"] },
+      { en: "only", he: "רק", sentence: "I only need five minutes.", blank: "I ______ need five minutes.", answers: ["only"] },
+      { en: "perfect", he: "מושלם", sentence: "This photo is perfect.", blank: "This photo is ______.", answers: ["perfect"] },
+      { en: "pocket", he: "כיס", sentence: "The ticket is in my pocket.", blank: "The ticket is in my ______.", answers: ["pocket"] },
+      { en: "really", he: "באמת", sentence: "I really like Japan.", blank: "I ______ like Japan.", answers: ["really"] },
+      { en: "see", he: "לראות", sentence: "I see Mount Fuji.", blank: "I ______ Mount Fuji.", answers: ["see"] },
+      { en: "should", he: "כדאי / צריך", sentence: "You should take care.", blank: "You ______ take care.", answers: ["should"] },
+      { en: "so", he: "אז / לכן", sentence: "I am tired, so I sit down.", blank: "I am tired, ______ I sit down.", answers: ["so"] },
+      { en: "sorry", he: "מצטער", sentence: "I am sorry.", blank: "I am ______.", answers: ["sorry"] },
+      { en: "tasty", he: "טעים", sentence: "The sushi is tasty.", blank: "The sushi is ______.", answers: ["tasty"] },
+      { en: "tell a story", he: "לספר סיפור", sentence: "Please tell a story.", blank: "Please ______.", answers: ["tell a story"] },
+    ];
+
+    const TOTAL_WORDS = WORDS.length;
+    const PLAYER_PREF_KEY = "japanQuestPlayer";
+
+    const state = {
+      player: "both",
+      mode: null,
+      score: 0,
+      streak: 0,
+      high: 0,
+      sound: true,
+      i: 0,
+      total: 0,
+      deck: [],
+      known: 0,
+      direction: "en-he",
+      locked: false,
+      matchSel: null,
+      matchLeft: 0,
+      mixLeft: 0,
+      mastered: new Set(),
+      correctCounts: {},
+      playCount: 0,
+      lastPlayed: null
+    };
+
+    const stage = document.getElementById("stage");
+    const toastEl = document.getElementById("toast");
+    let audioCtx = null;
+
+    function highKey() { return "japanQuestHigh_" + state.player; }
+    function progressKey() { return "japanQuestProgress_" + state.player; }
+
+    function defaultProgress() {
+      return { mastered: [], correctCounts: {}, lastPlayed: null, playCount: 0 };
+    }
+
+    function loadProgress() {
+      let data = defaultProgress();
+      try {
+        const raw = localStorage.getItem(progressKey());
+        if (raw) data = Object.assign(defaultProgress(), JSON.parse(raw));
+      } catch (e) {}
+      state.mastered = new Set(Array.isArray(data.mastered) ? data.mastered : []);
+      state.correctCounts = data.correctCounts && typeof data.correctCounts === "object" ? data.correctCounts : {};
+      state.playCount = Number(data.playCount || 0);
+      state.lastPlayed = data.lastPlayed || null;
+      try { state.high = Number(localStorage.getItem(highKey()) || 0); }
+      catch (e) { state.high = 0; }
+      updateMasteredUI();
+      document.getElementById("high").textContent = state.high;
+    }
+
+    function saveProgress() {
+      const payload = {
+        mastered: Array.from(state.mastered),
+        correctCounts: state.correctCounts,
+        lastPlayed: state.lastPlayed || new Date().toISOString(),
+        playCount: state.playCount
+      };
+      try {
+        localStorage.setItem(progressKey(), JSON.stringify(payload));
+        localStorage.setItem(highKey(), String(state.high));
+        localStorage.setItem(PLAYER_PREF_KEY, state.player);
+      } catch (e) {}
+      updateMasteredUI();
+    }
+
+    function updateMasteredUI() {
+      const el = document.getElementById("masteredLabel");
+      if (el) el.textContent = state.mastered.size + "/" + TOTAL_WORDS;
+    }
+
+    function markMastered(en) {
+      if (!en) return;
+      state.mastered.add(en);
+      saveProgress();
+    }
+
+    function unmarkMastered(en) {
+      if (!en) return;
+      state.mastered.delete(en);
+      state.correctCounts[en] = 0;
+      saveProgress();
+    }
+
+    function recordCorrect(en) {
+      if (!en) return;
+      const n = (Number(state.correctCounts[en]) || 0) + 1;
+      state.correctCounts[en] = n;
+      if (n >= 2 || state.mastered.has(en)) {
+        state.mastered.add(en);
+      }
+      state.lastPlayed = new Date().toISOString();
+      saveProgress();
+    }
+
+    function recordWrong(en) {
+      if (!en) return;
+      // keep cumulative correctCounts; do not strip mastery on one miss
+      state.lastPlayed = new Date().toISOString();
+      saveProgress();
+    }
+
+    function loadHigh() { loadProgress(); }
+
+    function saveHigh() {
+      if (state.score > state.high) {
+        state.high = state.score;
+        try { localStorage.setItem(highKey(), String(state.high)); } catch (e) {}
+        document.getElementById("high").textContent = state.high;
+      }
+    }
+
+    function updateStats() {
+      document.getElementById("score").textContent = state.score;
+      document.getElementById("streak").textContent = state.streak;
+      document.getElementById("high").textContent = state.high;
+      document.getElementById("progressLabel").textContent = state.total ? (Math.min(state.i, state.total) + "/" + state.total) : "0/0";
+      updateMasteredUI();
+      const bar = document.getElementById("pbar");
+      if (bar) bar.style.width = (state.total ? Math.min(100, (state.i / state.total) * 100) : 0) + "%";
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    /** Prefer non-mastered words first, then mastered; both groups shuffled. */
+    function deckPreferNew(source, limit) {
+      const fresh = [];
+      const known = [];
+      source.forEach(w => {
+        if (state.mastered.has(w.en)) known.push(w);
+        else fresh.push(w);
+      });
+      const ordered = shuffle(fresh).concat(shuffle(known));
+      return typeof limit === "number" ? ordered.slice(0, limit) : ordered;
+    }
+
+    function pickN(arr, n, except) {
+      return shuffle(arr.filter(w => !except || w.en !== except.en)).slice(0, n);
+    }
+    function norm(s) {
+      return String(s || "").toLowerCase().replace(/[!?.,'"]/g, "").replace(/\s+/g, " ").trim();
+    }
+    function showToast(text) {
+      toastEl.textContent = text;
+      toastEl.style.display = "block";
+      clearTimeout(showToast.t);
+      showToast.t = setTimeout(() => { toastEl.style.display = "none"; }, 1600);
+    }
+    function beep(ok) {
+      if (!state.sound) return;
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = "sine";
+        o.frequency.value = ok ? 720 : 220;
+        g.gain.setValueAtTime(0.07, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + 0.16);
+      } catch (e) {}
+    }
+    function award(correct, wordEn) {
+      if (correct) {
+        state.streak += 1;
+        let gain = 10;
+        if (state.streak > 0 && state.streak % 5 === 0) {
+          gain += 10;
+          showToast("רצף של " + state.streak + "! אלופה 🌟");
+        }
+        state.score += gain;
+        beep(true);
+        if (wordEn) recordCorrect(wordEn);
+      } else {
+        state.streak = 0;
+        beep(false);
+        if (wordEn) recordWrong(wordEn);
+      }
+      saveHigh();
+      updateStats();
+    }
+    function progressHtml() {
+      return '<div class="progress"><i id="pbar"></i></div>';
+    }
+    function home() {
+      state.mode = null;
+      document.querySelectorAll(".mode").forEach(b => b.classList.remove("active"));
+      const masteredN = state.mastered.size;
+      stage.innerHTML =
+        '<div class="welcome">' +
+          '<p class="big">🗻</p>' +
+          '<h2>מוכנות למסע?</h2>' +
+          '<p>בחרו שחקנית למעלה, ואז בחרו משחק. יש כאן ' + WORDS.length +
+          ' מילים וביטויים מיחידה 1: טוקיו, קופי שלג, ביטויי take, אוריגמי ועוד.</p>' +
+          '<p>יודעת כבר: <b>' + masteredN + '/' + TOTAL_WORDS +
+          '</b>. המילים שעדיין לא יודעות יופיעו קודם. ההתקדמות נשמרת בטלפון הזה.</p>' +
+          (state.playCount ? '<p style="color:var(--muted);font-size:14px">סיבובים עד עכשיו: ' + state.playCount + '</p>' : '') +
+        '</div>';
+      state.i = 0; state.total = 0; updateStats();
+    }
+    function endScreen(extra) {
+      saveHigh();
+      saveProgress();
+      stage.innerHTML =
+        '<div class="end">' +
+          '<div class="big">🎉</div>' +
+          '<h2>כל הכבוד!</h2>' +
+          '<p>' + (extra || "סיימתן את הסיבוב.") + '</p>' +
+          '<p>נקודות: <b>' + state.score + '</b> · רצף שיא בסיבוב: <b>' + state.streak +
+          '</b> · שיא כללי: <b>' + state.high + '</b></p>' +
+          '<p>יודעת: <b>' + state.mastered.size + '/' + TOTAL_WORDS + '</b></p>' +
+          '<div class="actions">' +
+            '<button class="btn gold" id="again">עוד פעם</button>' +
+            '<button class="btn ghost" id="toHome">חזרה לתפריט</button>' +
+          '</div>' +
+        '</div>';
+      document.getElementById("again").onclick = () => startMode(state.mode);
+      document.getElementById("toHome").onclick = home;
+    }
+
+    /* ---------- Flashcards ---------- */
+    function renderFlash() {
+      if (state.i >= state.deck.length) {
+        endScreen("ידעתן " + state.known + " מתוך " + state.deck.length + " כרטיסיות.");
+        return;
+      }
+      const w = state.deck[state.i];
+      const frontEn = state.direction === "en-he";
+      const already = state.mastered.has(w.en);
+      stage.innerHTML =
+        progressHtml() +
+        '<p class="prompt">לחצו על הכרטיס כדי להפוך אותו' +
+          (already ? ' · <span style="color:var(--teal)">כבר מסומנת כיודעת</span>' : '') +
+        '</p>' +
+        '<div class="card" id="flash"><div class="card-inner">' +
+          '<div class="face front"><div class="word ' + (frontEn ? "en" : "") + '">' + (frontEn ? w.en : w.he) + '</div><div class="hint">' + (frontEn ? "English" : "עברית") + '</div></div>' +
+          '<div class="face back"><div class="word ' + (frontEn ? "" : "en") + '">' + (frontEn ? w.he : w.en) + '</div><div class="hint">' + w.sentence + '</div></div>' +
+        '</div></div>' +
+        '<div class="actions">' +
+          '<button class="btn ghost" id="flipBtn">הפיכה</button>' +
+          '<button class="btn ok" id="knowBtn">יודעת ✓</button>' +
+          '<button class="btn bad" id="againBtn">עוד לא</button>' +
+        '</div>' +
+        '<div class="actions"><button class="btn ghost" id="dirBtn">' + (frontEn ? "כיוון: אנגלית ← עברית" : "כיוון: עברית ← אנגלית") + '</button></div>';
+      updateStats();
+      const card = document.getElementById("flash");
+      const flip = () => card.classList.toggle("flipped");
+      card.onclick = flip;
+      document.getElementById("flipBtn").onclick = (e) => { e.stopPropagation(); flip(); };
+      document.getElementById("knowBtn").onclick = () => {
+        state.known += 1;
+        markMastered(w.en);
+        state.correctCounts[w.en] = Math.max(Number(state.correctCounts[w.en]) || 0, 2);
+        saveProgress();
+        award(true, null); // already marked
+        state.i += 1;
+        renderFlash();
+      };
+      document.getElementById("againBtn").onclick = () => {
+        unmarkMastered(w.en);
+        award(false, null);
+        state.i += 1;
+        renderFlash();
+      };
+      document.getElementById("dirBtn").onclick = () => {
+        state.direction = frontEn ? "he-en" : "en-he";
+        renderFlash();
+      };
+    }
+
+    /* ---------- Multiple choice ---------- */
+    function nextChoice() {
+      if (state.i >= state.total) { endScreen("סיימתן את סיבוב הרב־ברירה."); return; }
+      const w = state.deck[state.i];
+      const askEn = Math.random() < 0.55;
+      const correct = askEn ? w.he : w.en;
+      const opts = pickN(WORDS, 3, w).map(x => askEn ? x.he : x.en);
+      opts.push(correct);
+      const choices = shuffle(opts);
+      state.locked = false;
+      stage.innerHTML =
+        progressHtml() +
+        '<div class="prompt">' + (askEn ? "מה הפירוש בעברית?" : "מה המילה באנגלית?") +
+          '<div class="q ' + (askEn ? "en" : "") + '">' + (askEn ? w.en : w.he) + '</div>' +
+        '</div>' +
+        '<div class="choices" id="choices"></div>' +
+        '<div class="msg" id="msg"></div>' +
+        '<div class="he-gloss">' + w.sentence + '</div>';
+      updateStats();
+      const box = document.getElementById("choices");
+      choices.forEach(text => {
+        const b = document.createElement("button");
+        b.className = "choice" + (askEn ? "" : " en");
+        b.textContent = text;
+        b.onclick = () => {
+          if (state.locked) return;
+          state.locked = true;
+          const ok = text === correct;
+          document.querySelectorAll(".choice").forEach(el => {
+            if (el.textContent === correct) el.classList.add("right");
+          });
+          if (!ok) b.classList.add("wrong");
+          document.getElementById("msg").className = "msg " + (ok ? "good" : "oops");
+          document.getElementById("msg").textContent = ok ? "מצוין!" : ("התשובה: " + correct);
+          award(ok, w.en);
+          setTimeout(() => { state.i += 1; nextChoice(); }, 850);
+        };
+        box.appendChild(b);
+      });
+    }
+
+    /* ---------- Fill in the blank ---------- */
+    function nextBlank() {
+      if (state.i >= state.total) { endScreen("סיימתן את השלמת המשפטים."); return; }
+      const w = state.deck[state.i];
+      state.locked = false;
+      const html = w.blank.replace("______", '<input id="guess" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" />');
+      stage.innerHTML =
+        progressHtml() +
+        '<p class="prompt">השלימו את המילה או הביטוי החסרים</p>' +
+        '<div class="blank-line en">' + html + '</div>' +
+        '<div class="he-gloss">רמז בעברית: ' + w.he + '</div>' +
+        '<div class="msg" id="msg"></div>' +
+        '<div class="actions">' +
+          '<button class="btn" id="checkBtn">בדיקה</button>' +
+          '<button class="btn ghost" id="skipBtn">לא יודעת</button>' +
+        '</div>';
+      updateStats();
+      const input = document.getElementById("guess");
+      input.focus();
+      const finish = (ok) => {
+        if (state.locked) return;
+        state.locked = true;
+        document.getElementById("msg").className = "msg " + (ok ? "good" : "oops");
+        document.getElementById("msg").textContent = ok ? "יופי!" : ("התשובה: " + w.en);
+        award(ok, w.en);
+        setTimeout(() => { state.i += 1; nextBlank(); }, 900);
+      };
+      const check = () => finish(w.answers.some(a => norm(a) === norm(input.value)));
+      document.getElementById("checkBtn").onclick = check;
+      document.getElementById("skipBtn").onclick = () => finish(false);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+    }
+
+    /* ---------- Matching ---------- */
+    function renderMatch() {
+      if (state.i >= state.total) { endScreen("כל הזוגות הותאמו!"); return; }
+      const group = state.deck.slice(state.i, state.i + 5);
+      if (!group.length) { endScreen("כל הזוגות הותאמו!"); return; }
+      const left = shuffle(group);
+      const right = shuffle(group);
+      state.matchSel = null;
+      state.matchLeft = group.length;
+      state.locked = false;
+      stage.innerHTML =
+        progressHtml() +
+        '<p class="prompt">התאימו אנגלית לעברית · ' + group.length + ' זוגות</p>' +
+        '<div class="match"><div id="leftCol"></div><div id="rightCol"></div></div>' +
+        '<div class="msg" id="msg"></div>';
+      updateStats();
+      function makeCol(id, items, side) {
+        const col = document.getElementById(id);
+        items.forEach(w => {
+          const b = document.createElement("button");
+          b.textContent = side === "en" ? w.en : w.he;
+          b.dataset.en = w.en;
+          if (side === "en") b.classList.add("en");
+          b.onclick = () => onMatchClick(b, side);
+          col.appendChild(b);
+        });
+      }
+      makeCol("leftCol", left, "en");
+      makeCol("rightCol", right, "he");
+    }
+    function onMatchClick(btn, side) {
+      if (btn.classList.contains("done") || state.locked) return;
+      if (!state.matchSel) {
+        document.querySelectorAll(".match button.selected").forEach(el => el.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.matchSel = { btn, side, en: btn.dataset.en };
+        return;
+      }
+      if (state.matchSel.side === side) {
+        state.matchSel.btn.classList.remove("selected");
+        btn.classList.add("selected");
+        state.matchSel = { btn, side, en: btn.dataset.en };
+        return;
+      }
+      const ok = state.matchSel.en === btn.dataset.en;
+      const wordEn = state.matchSel.en;
+      if (ok) {
+        state.matchSel.btn.classList.add("done");
+        btn.classList.add("done");
+        state.matchSel.btn.classList.remove("selected");
+        state.matchLeft -= 1;
+        award(true, wordEn);
+        document.getElementById("msg").className = "msg good";
+        document.getElementById("msg").textContent = "זוג מצוין!";
+        state.matchSel = null;
+        if (state.matchLeft === 0) {
+          setTimeout(() => { state.i += 5; renderMatch(); }, 650);
+        }
+      } else {
+        btn.classList.add("selected");
+        award(false, wordEn);
+        document.getElementById("msg").className = "msg oops";
+        document.getElementById("msg").textContent = "לא הזוג הזה, נסו שוב";
+        const first = state.matchSel.btn;
+        state.locked = true;
+        setTimeout(() => {
+          first.classList.remove("selected");
+          btn.classList.remove("selected");
+          state.matchSel = null;
+          state.locked = false;
+        }, 450);
+      }
+    }
+
+    /* ---------- Mixed challenge ---------- */
+    function nextMix() {
+      if (state.i >= state.total) { endScreen("סיימתן את האתגר המעורב!"); return; }
+      if (state.i % 2 === 0) nextChoice();
+      else nextBlank();
+    }
+
+    function startMode(mode) {
+      state.mode = mode;
+      state.score = 0;
+      state.streak = 0;
+      state.known = 0;
+      state.i = 0;
+      state.playCount = (Number(state.playCount) || 0) + 1;
+      state.lastPlayed = new Date().toISOString();
+      saveProgress();
+      document.querySelectorAll(".mode").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
+      if (mode === "flash") {
+        state.total = WORDS.length;
+        state.deck = deckPreferNew(WORDS);
+        renderFlash();
+      } else if (mode === "choice") {
+        state.total = 12;
+        state.deck = deckPreferNew(WORDS, 12);
+        nextChoice();
+      } else if (mode === "blank") {
+        state.total = 10;
+        state.deck = deckPreferNew(WORDS, 10);
+        nextBlank();
+      } else if (mode === "match") {
+        state.total = 15;
+        state.deck = deckPreferNew(WORDS, 15);
+        renderMatch();
+      } else if (mode === "mix") {
+        state.total = 12;
+        state.deck = deckPreferNew(WORDS, 12);
+        nextMix();
+      }
+      updateStats();
+    }
+
+    const _nextChoice = nextChoice;
+    const _nextBlank = nextBlank;
+    nextChoice = function () {
+      if (state.mode === "mix") {
+        if (state.i >= state.total) { endScreen("סיימתן את האתגר המעורב!"); return; }
+      }
+      if (state.mode !== "mix") return _nextChoice();
+      const w = state.deck[state.i];
+      const askEn = Math.random() < 0.55;
+      const correct = askEn ? w.he : w.en;
+      const opts = pickN(WORDS, 3, w).map(x => askEn ? x.he : x.en);
+      opts.push(correct);
+      const choices = shuffle(opts);
+      state.locked = false;
+      stage.innerHTML =
+        progressHtml() +
+        '<div class="prompt">' + (askEn ? "מה הפירוש בעברית?" : "מה המילה באנגלית?") +
+          '<div class="q ' + (askEn ? "en" : "") + '">' + (askEn ? w.en : w.he) + '</div>' +
+        '</div>' +
+        '<div class="choices" id="choices"></div>' +
+        '<div class="msg" id="msg"></div>';
+      updateStats();
+      const box = document.getElementById("choices");
+      choices.forEach(text => {
+        const b = document.createElement("button");
+        b.className = "choice" + (askEn ? "" : " en");
+        b.textContent = text;
+        b.onclick = () => {
+          if (state.locked) return;
+          state.locked = true;
+          const ok = text === correct;
+          document.querySelectorAll(".choice").forEach(el => {
+            if (el.textContent === correct) el.classList.add("right");
+          });
+          if (!ok) b.classList.add("wrong");
+          document.getElementById("msg").className = "msg " + (ok ? "good" : "oops");
+          document.getElementById("msg").textContent = ok ? "מצוין!" : ("התשובה: " + correct);
+          award(ok, w.en);
+          setTimeout(() => { state.i += 1; nextMix(); }, 850);
+        };
+        box.appendChild(b);
+      });
+    };
+    nextBlank = function () {
+      if (state.mode === "mix") {
+        if (state.i >= state.total) { endScreen("סיימתן את האתגר המעורב!"); return; }
+        const w = state.deck[state.i];
+        state.locked = false;
+        const html = w.blank.replace("______", '<input id="guess" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" />');
+        stage.innerHTML =
+          progressHtml() +
+          '<p class="prompt">השלימו את המילה או הביטוי החסרים</p>' +
+          '<div class="blank-line en">' + html + '</div>' +
+          '<div class="he-gloss">רמז בעברית: ' + w.he + '</div>' +
+          '<div class="msg" id="msg"></div>' +
+          '<div class="actions">' +
+            '<button class="btn" id="checkBtn">בדיקה</button>' +
+            '<button class="btn ghost" id="skipBtn">לא יודעת</button>' +
+          '</div>';
+        updateStats();
+        const input = document.getElementById("guess");
+        input.focus();
+        const finish = (ok) => {
+          if (state.locked) return;
+          state.locked = true;
+          document.getElementById("msg").className = "msg " + (ok ? "good" : "oops");
+          document.getElementById("msg").textContent = ok ? "יופי!" : ("התשובה: " + w.en);
+          award(ok, w.en);
+          setTimeout(() => { state.i += 1; nextMix(); }, 900);
+        };
+        const check = () => finish(w.answers.some(a => norm(a) === norm(input.value)));
+        document.getElementById("checkBtn").onclick = check;
+        document.getElementById("skipBtn").onclick = () => finish(false);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+        return;
+      }
+      return _nextBlank();
+    };
+
+    function setPlayer(player) {
+      state.player = player;
+      document.body.dataset.player = player;
+      document.querySelectorAll("#players .pill").forEach(p =>
+        p.classList.toggle("active", p.dataset.player === player)
+      );
+      try { localStorage.setItem(PLAYER_PREF_KEY, player); } catch (e) {}
+      loadProgress();
+      if (!state.mode) home();
+      else updateStats();
+    }
+
+    function resetProgress() {
+      const name = state.player === "mika" ? "מיקה" : state.player === "romi" ? "רומי" : "שתיהן";
+      const ok = window.confirm(
+        "לאפס את ההתקדמות של " + name + "?\n\n" +
+        "יימחקו: מילים מסומנות כיודעת, מונים וספירת סיבובים.\n" +
+        "גם השיא יימחק.\n\n" +
+        "לחצו אישור לאיפוס, או ביטול כדי להשאיר כמו שזה."
+      );
+      if (!ok) return;
+      state.mastered = new Set();
+      state.correctCounts = {};
+      state.playCount = 0;
+      state.lastPlayed = null;
+      state.high = 0;
+      state.score = 0;
+      state.streak = 0;
+      try {
+        localStorage.removeItem(progressKey());
+        localStorage.removeItem(highKey());
+      } catch (e) {}
+      saveProgress();
+      updateStats();
+      showToast("ההתקדמות אופסה");
+      home();
+    }
+
+    document.getElementById("modes").addEventListener("click", (e) => {
+      const btn = e.target.closest(".mode");
+      if (btn) startMode(btn.dataset.mode);
+    });
+    document.getElementById("players").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-player]");
+      if (!btn) return;
+      setPlayer(btn.dataset.player);
+    });
+    document.getElementById("soundBtn").onclick = () => {
+      state.sound = !state.sound;
+      document.getElementById("soundBtn").textContent = state.sound ? "🔊 צליל פועל" : "🔇 צליל כבוי";
+    };
+    document.getElementById("resetBtn").onclick = resetProgress;
+
+    const list = document.getElementById("wordList");
+    WORDS.forEach(w => {
+      const li = document.createElement("li");
+      li.innerHTML = '<span class="en">' + w.en + '</span> — ' + w.he;
+      list.appendChild(li);
+    });
+
+    // Restore preferred player, then progress
+    let preferred = "both";
+    try { preferred = localStorage.getItem(PLAYER_PREF_KEY) || "both"; } catch (e) {}
+    if (!["mika", "romi", "both"].includes(preferred)) preferred = "both";
+    setPlayer(preferred);
+    home();
+  </script>
+</body>
+</html>
